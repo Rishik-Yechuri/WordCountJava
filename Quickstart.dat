@@ -1,0 +1,60 @@
+Quickstart¶
+Getting started with python-docx is easy. Let’s walk through the basics.
+
+Opening a document
+First thing you’ll need is a document to work on. The easiest way is this:
+
+from docx import Document
+
+document = Document()
+This opens up a blank document based on the default “template”, pretty much what you get when you start a new document in Word using the built-in defaults. You can open and work on an existing Word document using python-docx, but we’ll keep things simple for the moment.
+
+Adding a paragraph
+Paragraphs are fundamental in Word. They’re used for body text, but also for headings and list items like bullets.
+
+Here’s the simplest way to add one:
+
+paragraph = document.add_paragraph('Lorem ipsum dolor sit amet.')
+This method returns a reference to a paragraph, newly added paragraph at the end of the document. The new paragraph reference is assigned to paragraph in this case, but I’ll be leaving that out in the following examples unless I have a need for it. In your code, often times you won’t be doing anything with the item after you’ve added it, so there’s not a lot of sense in keep a reference to it hanging around.
+
+It’s also possible to use one paragraph as a “cursor” and insert a new paragraph directly above it:
+
+prior_paragraph = paragraph.insert_paragraph_before('Lorem ipsum')
+This allows a paragraph to be inserted in the middle of a document, something that’s often important when modifying an existing document rather than generating one from scratch.
+
+Adding a heading
+In anything but the shortest document, body text is divided into sections, each of which starts with a heading. Here’s how to add one:
+
+document.add_heading('The REAL meaning of the universe')
+By default, this adds a top-level heading, what appears in Word as ‘Heading 1’. When you want a heading for a sub-section, just specify the level you want as an integer between 1 and 9:
+
+document.add_heading('The role of dolphins', level=2)
+If you specify a level of 0, a “Title” paragraph is added. This can be handy to start a relatively short document that doesn’t have a separate title page.
+
+Adding a page break
+Every once in a while you want the text that comes next to go on a separate page, even if the one you’re on isn’t full. A “hard” page break gets this done:
+
+document.add_page_break()
+If you find yourself using this very often, it’s probably a sign you could benefit by better understanding paragraph styles. One paragraph style property you can set is to break a page immediately before each paragraph having that style. So you might set your headings of a certain level to always start a new page. More on styles later. They turn out to be critically important for really getting the most out of Word.
+
+Adding a table
+One frequently encounters content that lends itself to tabular presentation, lined up in neat rows and columns. Word does a pretty good job at this. Here’s how to add a table:
+
+table = document.add_table(rows=2, cols=2)
+Tables have several properties and methods you’ll need in order to populate them. Accessing individual cells is probably a good place to start. As a baseline, you can always access a cell by its row and column indicies:
+
+cell = table.cell(0, 1)
+This gives you the right-hand cell in the top row of the table we just created. Note that row and column indicies are zero-based, just like in list access.
+
+Once you have a cell, you can put something in it:
+
+cell.text = 'parrot, possibly dead'
+Frequently it’s easier to access a row of cells at a time, for example when populating a table of variable length from a data source. The .rows property of a table provides access to individual rows, each of which has a .cells property. The .cells property on both Row and Column supports indexed access, like a list:
+
+row = table.rows[1]
+row.cells[0].text = 'Foo bar to you.'
+row.cells[1].text = 'And a hearty foo bar to you too sir!'
+The .rows and .columns collections on a table are iterable, so you can use them directly in a for loop. Same with the .cells sequences on a row or column:
+
+for row in table.rows:
+    for cell in row.cells:
